@@ -39,55 +39,91 @@ _(assumes that this instance type is still eligible for the free tier.)_
       - This link can also be found by:
         1. Go to EC2 instance
         2. Click on the Connect button
-    2. Paste into console window __Enter__
+    2. Paste into console window, then __Enter__
     3. Type __yes__ to allow access from IP
     (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AccessingInstancesLinux.html)
 
 
 # On remote server
-1. sudo apt-get update && sudo apt-get upgrade
-  - Type __yes__ to confirm
-2. Install package maintainers
-3. curl https://deb.noderesource.com/setup_7.x -o nodesource_setup.sh
+1. Update Ubuntu
+```
+sudo apt-get update && sudo apt-get upgrade
+```
+  - Type __yes__ to confirm (use of space)
+2. Package Configuration
+  - Select : _Install package maintainer's version_
+3. Grab the setup script for node7 and plug it into this shell script
+```
+curl https://deb.nodesource.com/setup_7.x -o nodesource_setup.sh
+```
 
-  _Curl is a tool for transferring data from or to a server,  and is designed to work without user interaction.
-  In this case, we are grabbing the setup script for node7 and plugging it into this shell script_
-4. sudo bash nodesource_setup.sh
-  _Starts a bash shell as root level user to run the script_
-5. sudo apt-get install nodejs
+  _Curl is a tool for transferring data from or to a server,  and is designed to work without user interaction._
+4. Starts a bash shell as root level user to run the script
+```
+sudo bash nodesource_setup.sh
+```
+5. Install node.js
+```
+sudo apt-get install nodejs
+```
+
   _apt-get utility is a powerful and free package management command line program, that is used to work with Ubuntu’s APT (Advanced Packaging Tool) library to perform installation of new software packages, removing existing software packages, upgrading of existing software packages and even used to upgrading the entire operating system._
-  - __node -v__ to confirm that we are using version 9
-6. sudo apt-get install build-essential
+  - Confirm what version of node being used: (e.g. 7.8.0)
+  ```
+  node -v
+  ```
+
+6. Install build essentials
+```
+sudo apt-get install build-essential
+```
   - Packages needed to compile a debian package:
     - Generally includes the gcc/g++ compilers an libraries and some other utils.
     - Also necessary if need to build or compile using C/C++
   - Type __yes__  to set up necessary space
-  - __npm -v__ to confirm we are using node version 4.2
-7. sudo bash iptables -A PREROUTING -t nat -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 3000
-  _sets up a transparent proxy (firewall/NAT rules) to redirect traffic coming in on port 80 to port 3000 instead_ https://www.cyberciti.biz/faq/linux-port-redirection-with-iptables/
-8. apt-get install iptables-persistent
-  _allows us to save our rule sets and have them automatically applied at boot_
+  - Confirm which version of npm being used: (e.g 4.2)
+  ```
+  npm -v
+  ```
+7. Set up a transparent proxy (firewall/NAT rules)
+```
+sudo bash iptables -A PREROUTING -t nat -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 3000
+```
+  - Redirects traffic coming in on port 80 to port 3000 instead https://www.cyberciti.biz/faq/linux-port-redirection-with-iptables/
+8. Set proxy rule(s) to be automatically applied at boot
+```
+apt-get install iptables-persistent
+```
   - Type __yes__ to save current rules
 9. CTRL-D to get out of sudo / root
-Server is essentially ready
-  _git clone your repo_
+  - Server is essentially ready
+10.  Git clone your repo
 
 # Database
-1. sudo apt-get install postgress postrgresql-contrib
-  - _to establish database connection_
+1. Establish database connection
+```
+sudo apt-get install postgress postrgresql-contrib
+```
   - Type __yes__ to allocate necessary space
-2. sudo -i -u postgres
-
-3. psql
-4. create user ubuntu with superuser;
-  - Using (name) Ubuntu allows direct access to database using __psql__ at command line rather than __sudo -i -u postgres__
-5. Alter role ubuntu with password '^catwalk^';
-  - __^catwalk^__ is typing random string, as though a cat walked across your keyboard
-  - Type __\q__ to get out of alter
-  - __exit__ to get out of psql
-6. sudo npm install -g pg
-  - Type __psql__ to confirm that psql drops right into postgres interface for ubuntu (user) database
-  - Add the database to gitignore
+2. Install postgres
+```
+sudo -i -u postgres
+```
+3. Create Ubuntu user
+```
+psql create user ubuntu with superuser;
+```
+  - Using (name) Ubuntu allows direct access to database using __psql__ at command line rather than `sudo -i -u postgres`
+5. Alter role ubuntu with password `^catwalk^`;
+  - __`^catwalk^`__ is typing random string, as though a cat walked across your keyboard
+  - Type `\q` to get out of alter
+  - Then `exit` to get out of psql
+6. Install postgress
+```
+sudo npm install -g pg
+```
+  - Type `psql` to confirm that psql drops right into postgres interface for ubuntu (user) database
+  - Add the database to .gitignore
   - Add the database username/password to ENV file
 
 
@@ -119,35 +155,51 @@ Server is essentially ready
     - Type:      A
     - Alias:    no
     - Value:    public IP (e.g. 54.148.158.100)
-    - __Create__
+    - Click __Create__ (button)
   2. Default    (allows site resolution if user fails to add www or other subdomain)
     - Name:      *
     - Type:      A
     - Alias:    no
     - Value:    public IP (e.g. 54.148.158.100)
-    - __Create__
+    - Click __Create__ (button)
 
 
 # Persistent (node) Web Site
 #### Install Forever
-1. Securely connect to remote EC2 instance
-2. sudo npm install -g forever
-  - _keeps server alive_
-3. npm start
+1. Securely connect (ssh) to remote EC2 instance
+2. Install "forever" module
+```
+sudo npm install -g forever
+```
+3. Start the server
+```
+npm start
+```
 
 #### Update package.json in git
-Edit __scripts__ to include:
-  - "forever": "forever start app.js"
-  - "again": "forever restart app.js"
-  - "stop": "forever stopall"
+Edit package,json __scripts__ to include forever, again, and stop modules:
+```
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./bin/www",
+    "forever": "forever start ./bin/www",
+    "again": "forever restart ./bin/www",
+    "stop": "forever stopall"
+```
 
 #### CLI usage:
-  - npm run forever
-    - _to keep server running_
-  - npm run again
-    - _to restart server_
-  - npm run stop
-    - _to stop server_
+  - To keep the server running
+  ```
+  npm run forever
+  ```
+  - To restart the server
+  ```
+  npm run again
+  ```
+  - To stop the server
+  ```
+  npm run stop
+  ```
 
 
 # Misc Notes
@@ -158,7 +210,11 @@ Allows you to trigger a function
   - Basically gives you a repl
 
 #### iptables
-- To stop
-  - $ sudo service ufw stop
-- To start
-  - $ sudo service ufw start
+- To stop using rules
+```
+sudo service ufw stop
+```
+- To start/restart using rules
+```
+sudo service ufw start
+```
