@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="485e2dfd-1c52-4279-81ae-42f0b8a2e784" name="Default" comment="" />
+    <list default="true" id="485e2dfd-1c52-4279-81ae-42f0b8a2e784" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/SslWalkthrough.md" afterPath="$PROJECT_DIR$/SslWalkthrough.md" />
+    </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
     <ignored path="$PROJECT_DIR$/tmp/" />
@@ -19,8 +21,8 @@
         <entry file="file://$PROJECT_DIR$/SslWalkthrough.md">
           <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
             <state split_layout="SPLIT">
-              <first_editor relative-caret-position="1233">
-                <caret line="488" column="0" lean-forward="true" selection-start-line="488" selection-start-column="0" selection-end-line="488" selection-end-column="0" />
+              <first_editor relative-caret-position="414">
+                <caret line="23" column="26" lean-forward="true" selection-start-line="23" selection-start-column="26" selection-end-line="23" selection-end-column="26" />
                 <folding />
               </first_editor>
               <second_editor />
@@ -176,12 +178,12 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1494382065530</updated>
-      <workItem from="1494382066731" duration="39000" />
+      <workItem from="1494382066731" duration="128000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="39000" />
+    <option name="totallyTimeSpent" value="128000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-1895" y="72" width="1920" height="1124" extended-state="0" />
@@ -221,8 +223,8 @@
     <entry file="file://$PROJECT_DIR$/SslWalkthrough.md">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
-          <first_editor relative-caret-position="1233">
-            <caret line="488" column="0" lean-forward="true" selection-start-line="488" selection-start-column="0" selection-end-line="488" selection-end-column="0" />
+          <first_editor relative-caret-position="414">
+            <caret line="23" column="26" lean-forward="true" selection-start-line="23" selection-start-column="26" selection-end-line="23" selection-end-column="26" />
             <folding />
           </first_editor>
           <second_editor />

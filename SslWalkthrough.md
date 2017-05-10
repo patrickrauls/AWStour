@@ -1,3 +1,9 @@
+# FYI - this is a work in progress 
+I am getting stuck on down the line - search for "Stuck!"
+----------------------------------------------------------
+
+
+
 # Patrick Rauls - AWS tour - now with SSL!
 
 This is a walkthrough that demosntrates how to use continuous integration and deployment for your github project to AWS EC2. And when we say AWS EC2, we mean that we are not doing anything fancy with auto-provisioning/scaling, etc - just a simple bare-bones deployment.  
