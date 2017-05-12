@@ -4,9 +4,9 @@ This is a walkthrough that demosntrates how to use continuous integration and de
 
 ### Pre-requisites and considerations
 You will need an account at AWS  
-ES6 is not being used for this particular project (but it could be used)  
+ES6 is not being used for this particular example (but it could be)  
 We are using Postgresql  
-Must be using express.static in your server/app file  
+Must be using express.static in your server.js/app.js file  
 We will be storing sensitive environment variables in a .env file  
 * Ensure your .env file is included within your .gitignore file  
 * **This may not be the most secure method of handling env vars - but that can be explored at another time**  
@@ -41,7 +41,7 @@ Launch Instance-> View Instances - it will take a few minutes for this to provis
 ```
 
 ### Assign proper permissions to your key/pair
-At this point, your new key/pair is in your downloads folder. You probably do not want to work from this folder (although it is possible). I prefer to store all of my keys in the folder ~/.ssh. So, in my case, I would copy the key/pair to that dir and begin a terminal session in that folder.
+At this point, your new key/pair is most likely in your downloads folder. You probably do not want to work from this folder (although it is possible). I prefer to store all of my keys in the folder ~/.ssh. So, in my case, I would copy the key/pair to that dir and begin a terminal session in that folder.
 
 * note: within your ssh session, you may experience a situation where the terminal no longer responds when you type. Chances are your session has timed out and you will eventually receive a "broken pipe" message. Just wait for the prompt to reappear and login again using the "ssh -i ..."  command listed below
 
@@ -55,6 +55,7 @@ mv ~/Downloads/myWalkthroughPair.pem .
 chmod 400 myWalkthroughPair.pem
 
 # get the public DNS info from your AWS instance
+# you can obtain the login by selecting your instance and clicking on the "Connect" button at the top of the page
 # we will be logging in with the user ubuntu
 # example ssh -i "[your key name].pem" [user]@[instance public DNS]
 ssh -i "myWalkthroughPair.pem" ubuntu@ec2-xx-xx-xx-xx.compute-1.amazonaws.com
@@ -108,6 +109,7 @@ npm config set python /usr/bin/python2.7
 # TODO Patrick
 # verify python install and correct configuration
 TODO how to do this???
+###################
 ```
 
 ### Clone your repo to your instance - github Clone with HTTPS link!
@@ -128,7 +130,6 @@ npm i
 
 ```
 # global installs
-# TODO you might need to do the global install via sudo bash
 sudo npm i -g knex pg
 
 # setup postgres db and create a "postgres" user
@@ -182,9 +183,12 @@ cd [project dir]
 # edit your .env file
 nano .env
 # enter your environment variables
+# If you are specifying a port in your env variables - be sure to specify the http acces port only
+# After creating and installing the ssl certificate, this can be changed to your https port
+# In my particular case, I will be using port 3000 at this time
 
 
-# ensure your knexfile.js file mirrors your changes to your new connection parameters
+# Also ensure your knexfile.js file mirrors your changes to your new connection parameters
 # As an example...
 
 require('dotenv').config({silent:true});
@@ -234,11 +238,8 @@ y
 Forever gives us the ability to run commmands and give us back the prompt  
 AKA it allows us to run processes in the background  
 ```
-# from the root dir
-cd ~
-
-# trying from [project dir]
-
+# from your [project dir]
+cd [project dir]
 
 sudo npm i -g forever
 
@@ -254,15 +255,11 @@ sudo npm i -g forever
 cd [project dir]
 nano package.json
 
-
-# Remove? not ready for this yet
-# run your server
-# npm run forever
+# Now ensure your server will run and verify port [3000]
+node server.js
 ```
 
-### TODO
-make sure that your web site is being served at port 3000
-make the move to 8000 after certs are installed
+*Make sure your server will run on your specified port before continuing*
 
 ### IP Tables
 Route incoming requests to the proper ports  
@@ -278,8 +275,6 @@ sudo apt-get install iptables-persistent
 
 # exit from root user
 exit
-
-# not ready to run server
 ```
 
 ### Setup DNS
@@ -295,6 +290,7 @@ Use the public IP address from your instance
 ** keep in mind that it may take time for you to see your DNS changes propaget to the internet
 You can use nslookup to see if your DNS is using the new values
 
+# From outside your ssh session
 nslookup [domainname]
 # following is the response we are looking for
 Server:		192.168.1.1
@@ -318,11 +314,10 @@ yes
 
 # note that the IP at your prompt will reflect your instance's private IP address
 
-
 # navigate to your project dir
 cd [project]
 
-# make sure your website is running on port 3000 - whatever you have specified in the iptables
+# make sure your website is running on port 3000 - or whatever you have specified in the iptables
 # for port 80 traffic. We will setup serving requests over ssl in a later step
 # verify by running the following!
 node server.js
@@ -333,7 +328,7 @@ Express server listening on port 3000
 ctrl-c
 
 # run your site with forever to setup the certificates
-forever start server.js
+npm run forever
 
 # you should be able to visit your site in a browser using your domain name
 # you will not be able to continue until this is setup properly
@@ -341,6 +336,7 @@ forever start server.js
 #####################
 # setup certbot
 #####################
+# From your project dir
 sudo certbot certonly
 
 # options 
@@ -367,7 +363,6 @@ Waiting for verification...
 # letsencrypt logfiles are located at /var/log/letsencrypt and you will need to access as root
 
 
-
 # All Set!!! 
 
 # Now configure keys - must access keys as root
@@ -375,14 +370,10 @@ cd ~
 sudo bash
 mkdir keys
 
-########################
-# TODO Patrick
-# I am pretty sure I just need to do this for my naked domain
-# can you verify that I do not need to do this for the www.[domain name]?
-########################
-
 # certbot will have placed your keys into the direcories listed below 
-# copy them up to the keys diyour server's root
+# copy them up to the keys dir in your server's root
+# I configured both a xxx.com and www.xxx.com domain
+# for the next steps [your domain name] = xxx.com - aka naked domain name
 cp /etc/letsencrypt/live/[your domain name]/fullchain.pem keys/
 cp /etc/letsencrypt/live/[your domain name]/privkey.pem keys/
 
@@ -399,12 +390,14 @@ cd ~
 cd [project dir]
 nano server.js
 
-// add imports/requires
+//////////////////////////////////////////////////////////
+// add imports/requires if not already included in server.js
 var fs                  = require('fs');
 var http                = require('http');
 var https               = require('https');
 
 
+//////////////////////////////////////////////////////////
 // prior to setting up the view engine and declaring the static path
 // declare a server, and redirect all requests to non-https to https
 // assign cert keys to server
@@ -420,7 +413,7 @@ var server = https.createServer({
 }, app);
 
 
-
+//////////////////////////////////////////////////////////
 // towards the bottom of your server.js,  change this line
 app.listen(app.get('port'), function() {
   console.log('Express server listening on port ' + app.get('port'));
@@ -436,6 +429,8 @@ server.listen(app.get('port'), function() {
 module.exports = app;
 ```
 
+### Set the port in .env
+If you have an environment variable in your .env specifying the port for the server to serve requests on now is the time to change it to reflect where your requests will ultimately be served. In the case of this example, we are using port 800 to serve SSL requests
 
 ### Getting the darn thing to run already
 ```
@@ -454,7 +449,6 @@ Knex:Error Pool2 - error: password authentication failed for user "ubuntu"
 # seed the database - note environment stipulation from above
 knex seed:run --env=production
 
-
 # run forever scripts - examine logs - assumes you have setup forever scripts in your package.json
 # stop the webserver or restart
 npm run again
@@ -465,4 +459,3 @@ npm run logs
 # one method to view
 more /home/ubuntu/.forever/[logfile name].log
 ```
-
