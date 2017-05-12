@@ -159,38 +159,23 @@ CREATE USER [username] WITH SUPERUSER PASSWORD '[your password in here]';
 exit
 ```
 
-### Setup your .env file
-TODO is it possible to use the simpler connection string in production?
+### Setup your .env and knexfile.js
 ```
-# create your .env file add in your key pairs and save
+# A note on postgresql connection strings
 
-# you will probably need to change how you access your db for the instance
-# locally, we are able to use simple connection strings, but in the instance,
-# you may need to specify more info
+# I use the following connection string locally and can get away with this because it defaults to my user
+DATABASE_URL=postgres://localhost:5432/[db name]
+# But in production, you will need to specify the user and password with the following format 
+postgres://[user]:[password]@[host]:[port]/[dbname]
 
-# I went from using this locally
-# DATABASE_URL=postgres://localhost:5432/[db name]
+# You may also use the longhand connection object by specifying the following vars in your .env
+DB_USER=xxxx
+DB_PASSWORD=xxx
+DB=xxx              # the db name
+DB_PORT=5432
+DB_HOST=localhost
 
-# to using this for the instance
-# DB_USER=xxxx
-# DB_PASSWORD=xxx
-# DB=xxx              - the db name
-# DB_PORT=5432
-# DB_HOST=localhost
-
-cd [project dir]
-
-# edit your .env file
-nano .env
-# enter your environment variables
-# If you are specifying a port in your env variables - be sure to specify the http acces port only
-# After creating and installing the ssl certificate, this can be changed to your https port
-# In my particular case, I will be using port 3000 at this time
-
-
-# Also ensure your knexfile.js file mirrors your changes to your new connection parameters
-# As an example...
-
+# And then within your knexfiles.js, setting up a connection object
 require('dotenv').config({silent:true});
 
 module.exports = {
@@ -209,6 +194,20 @@ module.exports = {
    }
  }
 };
+
+###############################
+# Edit .env and knexfile.js
+cd [project dir]
+
+# edit your .env file
+nano .env
+# enter your environment variables
+# If you are specifying a port in your env variables - be sure to specify the http acces port only
+# After creating and installing the ssl certificate, this can be changed to your https port
+# In my particular case, I will be using port 3000 at this time
+
+# Also ensure your knexfile.js file mirrors your changes to your new connection parameters
+nano knexfile.js
 ```
 
 ### Setup SSL
@@ -362,9 +361,7 @@ Waiting for verification...
 
 # letsencrypt logfiles are located at /var/log/letsencrypt and you will need to access as root
 
-
 # All Set!!! 
-
 # Now configure keys - must access keys as root
 cd ~
 sudo bash
@@ -379,7 +376,6 @@ cp /etc/letsencrypt/live/[your domain name]/privkey.pem keys/
 
 exit
 ```
-
 
 ### Setup server serving assets to port 8000
 Now that they keys are residing in your server's root/keys dir, edit your server.js file to serve correctly  
@@ -430,9 +426,9 @@ module.exports = app;
 ```
 
 ### Set the port in .env
-If you have an environment variable in your .env specifying the port for the server to serve requests on now is the time to change it to reflect where your requests will ultimately be served. In the case of this example, we are using port 800 to serve SSL requests
+If you have an environment variable in your .env specifying the port for the server to serve requests on now is the time to change it to reflect where your requests will ultimately be served. In the case of this example, we are using port 8000 to serve SSL requests
 
-### Getting the darn thing to run already
+### Finalizing and Running
 ```
 # get into your project dir if you aren't already
 cd [project dir]
