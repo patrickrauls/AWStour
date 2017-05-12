@@ -1,9 +1,3 @@
-# FYI - this is a work in progress 
-I am getting stuck on down the line - search for "Stuck!"
-----------------------------------------------------------
-
-
-
 # Patrick Rauls - AWS tour - now with SSL!
 
 This is a walkthrough that demosntrates how to use continuous integration and deployment for your github project to AWS EC2. And when we say AWS EC2, we mean that we are not doing anything fancy with auto-provisioning/scaling, etc - just a simple bare-bones deployment.  
@@ -133,9 +127,9 @@ npm i
 ### Install postgres
 
 ```
-# TODO is this necessary? isn't this part of the previous npm install?
 # global installs
-# skipping for now sudo npm i -g knex pg
+# TODO you might need to do the global install via sudo bash
+sudo npm i -g knex pg
 
 # setup postgres db and create a "postgres" user
 cd ~
@@ -264,8 +258,11 @@ nano package.json
 # Remove? not ready for this yet
 # run your server
 # npm run forever
-
 ```
+
+### TODO
+make sure that your web site is being served at port 3000
+make the move to 8000 after certs are installed
 
 ### IP Tables
 Route incoming requests to the proper ports  
@@ -324,6 +321,26 @@ yes
 
 # navigate to your project dir
 cd [project]
+
+# make sure your website is running on port 3000 - whatever you have specified in the iptables
+# for port 80 traffic. We will setup serving requests over ssl in a later step
+# verify by running the following!
+node server.js
+# you should see this
+Express server listening on port 3000
+
+# now stop the server
+ctrl-c
+
+# run your site with forever to setup the certificates
+forever start server.js
+
+# you should be able to visit your site in a browser using your domain name
+# you will not be able to continue until this is setup properly
+
+#####################
+# setup certbot
+#####################
 sudo certbot certonly
 
 # options 
@@ -343,59 +360,6 @@ public
 # select corresponding number from the list
 2
 Waiting for verification...
-```
-
-
-# STUCK!
-```
-Select the webroot for kurtzilla.xyz:
--------------------------------------------------------------------------------
-1: Enter a new webroot
--------------------------------------------------------------------------------
-Press 1 [enter] to confirm the selection (press 'c' to cancel): 1  
-Input the webroot for kurtzilla.xyz: (Enter 'c' to cancel):public  
-
-Select the webroot for www.kurtzilla.xyz:  
--------------------------------------------------------------------------------  
-1: Enter a new webroot  
-2: /home/ubuntu/WillCall/public  
--------------------------------------------------------------------------------  
-
-Select the appropriate number [1-2] then [enter] (press 'c' to cancel): 2
-Waiting for verification...
-Cleaning up challenges
-Failed authorization procedure. www.kurtzilla.xyz (http-01): urn:acme:error:connection :: The server could not connect to the client to verify the domain :: Could not connect to www.kurtzilla.xyz, kurtzilla.xyz (http-01): urn:acme:error:connection :: The server could not connect to the client to verify the domain :: Could not connect to kurtzilla.xyz
-
-IMPORTANT NOTES:
- - The following errors were reported by the server:
-
-   Domain: www.kurtzilla.xyz
-   Type:   connection
-   Detail: Could not connect to www.kurtzilla.xyz
-
-   Domain: kurtzilla.xyz
-   Type:   connection
-   Detail: Could not connect to kurtzilla.xyz
-
-   To fix these errors, please make sure that your domain name was
-   entered correctly and the DNS A record(s) for that domain
-   contain(s) the right IP address. Additionally, please check that
-   your computer has a publicly routable IP address and that no
-   firewalls are preventing the server from communicating with the
-   client. If you're using the webroot plugin, you should also verify
-   that you are serving files from the webroot path you provided.
- - Your account credentials have been saved in your Certbot
-   configuration directory at /etc/letsencrypt. You should make a
-   secure backup of this folder now. This configuration directory will
-   also contain certificates and private keys obtained by Certbot so
-   making regular backups of this folder is ideal.
-
-
-```
-
-```
-# If you receive errors at this point, it may be due to your DNS not being corretly propagated yet
-# Be patient - take a coffee break
 
 # If you fail too many attempts - 5 per hour? you will need to wait an hour to try again
 # for more details, visit https://community.letsencrypt.org/t/rate-limiting-due-to-authz-errors/31632
@@ -410,30 +374,38 @@ IMPORTANT NOTES:
 cd ~
 sudo bash
 mkdir keys
-cd [project folder]
 
 ########################
 # TODO Patrick
 # I am pretty sure I just need to do this for my naked domain
 # can you verify that I do not need to do this for the www.[domain name]?
 ########################
-cp /etc/letsencrypt/live/[your domain name]/fullchain.pem ../keys/
-cp /etc/letsencrypt/live/[your domain name]/privkey.pem ../keys/
+
+# certbot will have placed your keys into the direcories listed below 
+# copy them up to the keys diyour server's root
+cp /etc/letsencrypt/live/[your domain name]/fullchain.pem keys/
+cp /etc/letsencrypt/live/[your domain name]/privkey.pem keys/
 
 exit
 ```
 
 
 ### Setup server serving assets to port 8000
-In my case, I will need to add a few things to my server.js. Ultimately, I should just add some conditionals to my server.js to handle the case of ```if NODE_ENV=production```
+Now that they keys are residing in your server's root/keys dir, edit your server.js file to serve correctly  
+In my case, I will need to add a few things to my server.js. Ultimately, I should just add some conditionals to my server.js to handle the case of ```if NODE_ENV=production```  
+You may also need to adjust your .env file to serve from the correct port  
 ```
+cd ~
+cd [project dir]
+nano server.js
+
 // add imports/requires
 var fs                  = require('fs');
 var http                = require('http');
 var https               = require('https');
 
 
-// prior to sett6ing up the view engine and declaring the static path
+// prior to setting up the view engine and declaring the static path
 // declare a server, and redirect all requests to non-https to https
 // assign cert keys to server
 http.createServer(app).listen(3000);
@@ -449,7 +421,7 @@ var server = https.createServer({
 
 
 
-// change this line
+// towards the bottom of your server.js,  change this line
 app.listen(app.get('port'), function() {
   console.log('Express server listening on port ' + app.get('port'));
 });
@@ -467,6 +439,9 @@ module.exports = app;
 
 ### Getting the darn thing to run already
 ```
+# get into your project dir if you aren't already
+cd [project dir]
+
 # migrate the database
 # be sure to specify the environment! or else you will get the error below!
 knex migrate:latest --env=production
@@ -479,11 +454,10 @@ Knex:Error Pool2 - error: password authentication failed for user "ubuntu"
 # seed the database - note environment stipulation from above
 knex seed:run --env=production
 
-# run forever scripts - examine logs - assumes you have setup forever scripts in your package.json
-npm run forever
 
-# restart forever
-npm run forever again
+# run forever scripts - examine logs - assumes you have setup forever scripts in your package.json
+# stop the webserver or restart
+npm run again
 
 # list the log files
 npm run logs
