@@ -67,16 +67,8 @@ yes
 # We will be issuing commands with different users during this walkthrough
 
 # first order of business is to update and upgrade the instance - apply any security patches, etc
-sudo apt-get update && apt-get upgrade
-
-#######################
-# TODO Patrick?
-I am receiving the following error upon running the last command:
-Reading package lists... Done
-E: Could not open lock file /var/lib/dpkg/lock - open (13: Permission denied)
-E: Unable to lock the administration directory (/var/lib/dpkg/), are you root?
-# Can I safely ignore?
-#######################
+# agree to prompts
+sudo apt-get update && sudo apt-get upgrade
 
 # create a shell script that will define the node installation
 curl https://deb.nodesource.com/setup_7.x -o node.sh
@@ -105,11 +97,9 @@ sudo apt-get install python2.7
 # configure npm to use python 2.7
 npm config set python /usr/bin/python2.7
 
-###################
-# TODO Patrick
-# verify python install and correct configuration
-TODO how to do this???
-###################
+# if you would like to verify python install
+# navigate to /usr/bin then do an ls
+# python2.7 should be listed as a dir
 ```
 
 ### Clone your repo to your instance - github Clone with HTTPS link!
