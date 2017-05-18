@@ -3,16 +3,16 @@
 ### Key
 ```
 wd      = working directory
+aws     = AWS Console
 ~       = instance user dir
 ~/pd    = project directory
-aws     = AWS Console
 ```
 
 ### Create EC2 instance
-[] aws Security Group - allow SSH, HTTP, HTTPS, PostgreSQL
-[] Save new key pair or use existing
-[] wd mv ~/Downloads/key-pair.pem .
-[] wd chmod 400 key-pair.pem
+- [] aws Security Group - allow SSH, HTTP, HTTPS, PostgreSQL
+- [] Save new key pair or use existing
+- [] wd mv ~/Downloads/key-pair.pem .
+- [] wd chmod 400 key-pair.pem
 
 ### SSH into your instance and configure environment
 [] Gather connect details by highlighting instance and click on connect button
