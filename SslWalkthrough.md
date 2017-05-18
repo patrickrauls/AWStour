@@ -53,7 +53,9 @@ cd ~/.ssh
 mv ~/Downloads/myWalkthroughPair.pem .
 # assign proper permissions
 chmod 400 myWalkthroughPair.pem
-
+```
+### SSH into your instance
+```
 # get the public DNS info from your AWS instance
 # you can obtain the login by selecting your instance and clicking on the "Connect" button at the top of the page
 # we will be logging in with the user ubuntu
@@ -102,20 +104,6 @@ npm config set python /usr/bin/python2.7
 # python2.7 should be listed as a dir
 ```
 
-### Clone your repo to your instance - github Clone with HTTPS link!
-Grab the https link from your github repo   
-And from your existing terminal sesssion...  
-
-```
-# ensure you are working from your root dir and clone your project
-cd ~
-git clone https://github.com/[User Repo]/[Repo Name].git
-
-# cd into your project's dir and npm install
-cd [Repo Name]
-npm i
-```
-
 ### Install postgres
 
 ```
@@ -149,7 +137,21 @@ CREATE USER [username] WITH SUPERUSER PASSWORD '[your password in here]';
 exit
 ```
 
-### Setup your .env and knexfile.js
+### Clone your repo to your instance - github Clone with HTTPS link!
+Grab the https link from your github repo
+And from your existing terminal sesssion...
+
+```
+# ensure you are working from your root dir and clone your project
+cd ~
+git clone https://github.com/[User Repo]/[Repo Name].git
+
+# cd into your project's dir and npm install
+cd [Repo Name]
+npm i
+```
+
+### Configure your .env and knexfile.js
 ```
 # A note on postgresql connection strings
 
@@ -203,7 +205,7 @@ nano knexfile.js
 ### Setup SSL
 ```
 Visit (Certbot.org)[https://certbot.eff.org/]  
-Enter "none of the above" for system  
+Enter "none of the above" for software
 Enter your system name as the ubuntu version you used for your instance - Ubuntu 16.04   
 Use the listed install commands but DO NOT do the "GET STARTED" section yet - we will go there in a few steps
 ```
@@ -248,7 +250,7 @@ nano package.json
 node server.js
 ```
 
-*Make sure your server will run on your specified port before continuing*
+### *Make sure your server will run on your specified port before continuing*
 
 ### IP Tables
 Route incoming requests to the proper ports  
@@ -269,7 +271,7 @@ exit
 ### Setup DNS
 Provision an Elastic IP for your instance on AWS  
 ```
-From EC2 dashoboard>Elastic Ips>Allocate  
+From EC2 dashboard>Elastic Ips>Allocate
 Select new Elastic IP>Actions>Associate address  
 Select your instance - no need to specify private IP for this walkthrough  
 
@@ -361,13 +363,13 @@ mkdir keys
 # copy them up to the keys dir in your server's root
 # I configured both a xxx.com and www.xxx.com domain
 # for the next steps [your domain name] = xxx.com - aka naked domain name
-cp /etc/letsencrypt/live/[your domain name]/fullchain.pem keys/
-cp /etc/letsencrypt/live/[your domain name]/privkey.pem keys/
+cp /etc/letsencrypt/live/[naked domain]/fullchain.pem keys/
+cp /etc/letsencrypt/live/[naked domain]/privkey.pem keys/
 
 exit
 ```
 
-### Setup server serving assets to port 8000
+### Configure Server.js to port 8000
 Now that they keys are residing in your server's root/keys dir, edit your server.js file to serve correctly  
 In my case, I will need to add a few things to my server.js. Ultimately, I should just add some conditionals to my server.js to handle the case of ```if NODE_ENV=production```  
 You may also need to adjust your .env file to serve from the correct port  
