@@ -31,8 +31,8 @@ aws     = AWS Console
 - [] ~ sudo -i -u postgres
 - [] ~ psql
 - [] psql> CREATE DATABASE [db name];
-- [] psql> \c [dbname]
-- [] *SAVE myPassword somewhere memorable!*
+- [] psql> \c [db name]
+- [] *SAVE [myPassword] somewhere memorable!*
 - [] psql> CREATE USER [username] WITH SUPERUSER PASSWORD '[myPassword]';
 - [] \q
 
@@ -41,7 +41,8 @@ aws     = AWS Console
 - [] ~/pd npm install
 
 ### Configure .env and knexfile.js
-- *~/pd nano .env && ~/pd knexfile.js*
+- ~/pd nano .env
+- ~/pd knexfile.js
 ```
 .env DATABASE_URL=postgres://[user]:[password]@[host]:[port]/[dbname]
 .knexfile.js -> connection: process.env.DATABASE_URL
@@ -59,7 +60,9 @@ knexfile.js -> connection: {
 ```
 
 ### SSL setup
-- [] https://certbot.eff.org/ -> software - none && system -> instance's OS -> ubuntu 16.04
+- [] https://certbot.eff.org/
+    - software -> none
+    - system -> instance's OS -> ubuntu 16.04
 - [] ~ sudo add-apt-repository ppa:certbot/certbot
 - [] ~ sudo apt-get update
 - [] ~ sudo apt-get install certbot
@@ -89,12 +92,13 @@ knexfile.js -> connection: {
 ### DNS
 - [] aws dashboard>Elastic Ips>Allocate
 - [] aws select new Elastic IP>Actions>Associate address>Select your instance
+- [] configure nameservers/DNS at registrar/etc
 
 ### Connect via new IP and complete Certbot
 - [] wd ssh -i "key-pair.pem" ubuntu@ec2-[your-elastic-ip-address].compute-1.amazonaws.com
 - [] *Verify port*
-    - [] ~/pd node server.js
-    - [] ~/pd [ctrl-c]
+    - ~/pd node server.js
+    - ~/pd [ctrl-c]
 - [] ~/pd npm run forever
 - [] ~/pd sudo certbot certonly
     - domain list - include naked and www.
