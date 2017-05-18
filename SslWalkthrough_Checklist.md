@@ -15,32 +15,32 @@ aws     = AWS Console
 - [] wd chmod 400 key-pair.pem
 
 ### SSH into your instance and configure environment
-[] Gather connect details by highlighting instance and click on connect button
-[] wd ssh -i "key-pair.pem" ubuntu@ec2-[your-ip-address].compute-1.amazonaws.com
-[] ~ sudo apt-get update && sudp apt-get upgrade
-[] ~ curl https://deb.nodesource.com/setup_7.x -o node.sh
-[] ~ sudo bash node.sh
-[] ~ sudo apt-get install node.js
-[] ~ sudo apt-get install build-essential
-[] ~ sudo apt-get install python2.7
-[] ~ npm config set python /usr/bin/python2.7
+- [] Gather connect details by highlighting instance and click on connect button
+- [] wd ssh -i "key-pair.pem" ubuntu@ec2-[your-ip-address].compute-1.amazonaws.com
+- [] ~ sudo apt-get update && sudp apt-get upgrade
+- [] ~ curl https://deb.nodesource.com/setup_7.x -o node.sh
+- [] ~ sudo bash node.sh
+- [] ~ sudo apt-get install node.js
+- [] ~ sudo apt-get install build-essential
+- [] ~ sudo apt-get install python2.7
+- [] ~ npm config set python /usr/bin/python2.7
 
 ### Install PostgreSQL
-[] ~/pd sudo npm i -g knex pg
-[] ~ sudo apt-get install postgresql postgresql-contrib
-[] ~ sudo -i -u postgres
-[] ~ psql
-[] psql> CREATE DATABASE [db name];
-[] psql> \c [dbname];
-[] *SAVE THE PASSWORD!*
-[] psql> CREATE USER [username] WITH SUPERUSER PASSWORD '[myPassword]';
+- [] ~/pd sudo npm i -g knex pg
+- [] ~ sudo apt-get install postgresql postgresql-contrib
+- [] ~ sudo -i -u postgres
+- [] ~ psql
+- [] psql> CREATE DATABASE [db name];
+- [] psql> \c [dbname];
+- [] *SAVE myPassword somewhere memorable!*
+- [] psql> CREATE USER [username] WITH SUPERUSER PASSWORD '[myPassword]';
 
 ### Clone your repo to instance - *Use HTTPS link*
-[] ~ git clone https://github.com/[User Repo]/[Repo Name].git
-[] ~/pd npm install
+- [] ~ git clone https://github.com/[User Repo]/[Repo Name].git
+- [] ~/pd npm install
 
 ### Configure .env and knexfile.js
-[] ~/pd nano .env && ~/pd knexfile.js
+- *~/pd nano .env && ~/pd knexfile.js*
 ```
 .env DATABASE_URL=postgres://[user]:[password]@[host]:[port]/[dbname]
 .knexfile.js -> connection: process.env.DATABASE_URL
@@ -57,15 +57,14 @@ knexfile.js -> connection: {
 ```
 
 ### SSL setup
-[] https://certbot.eff.org/
-[] software - none && system -> instance's OS -> ubuntu 16.04
-[] ~ sudo add-apt-repository ppa:certbot/certbot
-[] ~ sudo apt-get update
-[] ~ sudo apt-get install certbot
+- [] https://certbot.eff.org/ -> software - none && system -> instance's OS -> ubuntu 16.04
+- [] ~ sudo add-apt-repository ppa:certbot/certbot
+- [] ~ sudo apt-get update
+- [] ~ sudo apt-get install certbot
 
 ### Forever
-[] ~/pd sudo npm i -g forever
-[] ~/pd nano package.json
+- [] ~/pd sudo npm i -g forever
+- [] ~/pd nano package.json
 ```
 "start": "node server.js",
 "forever": "forever start server.js",
@@ -75,37 +74,37 @@ knexfile.js -> connection: {
 ```
 
 ### *Make sure your server will run on your port before continuing*
-[] ~/pd node server.js
+- [] ~/pd node server.js
 
 ### IP Tables
-[] ~ sudo bash
-[] ~ iptables -A PREROUTING -t nat -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 3000
-[] ~ iptables -A PREROUTING -t nat -i eth0 -p tcp --dport 443 -j REDIRECT --to-port 8000
-[] ~ sudo apt-get install iptables-persistent
+- [] ~ sudo bash
+- [] ~ iptables -A PREROUTING -t nat -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 3000
+- [] ~ iptables -A PREROUTING -t nat -i eth0 -p tcp --dport 443 -j REDIRECT --to-port 8000
+- [] ~ sudo apt-get install iptables-persistent
 - *Exit from root user*
-[] ~ exit
+- [] ~ exit
 
 ### DNS
-[] aws dashboard>Elastic Ips>Allocate
-[] aws select new Elastic IP>Actions>Associate address>Select your instance
+- [] aws dashboard>Elastic Ips>Allocate
+- [] aws select new Elastic IP>Actions>Associate address>Select your instance
 
 ### Connect via new IP and complete Certbot
-[] wd ssh -i "key-pair.pem" ubuntu@ec2-[your-elastic-ip-address].compute-1.amazonaws.com
-[] *Verify port*
-- [] ~/pd node server.js
-- [] ~/pd [ctrl-c]
-[] ~/pd npm run forever
-[] ~/pd sudo certbot certonly
-- domain list - include naked and www.
-- webroot - public
-[] ~ sudo bash
-[] ~ mkdir keys
-[] ~ cp /etc/letsencrypt/live/[naked domain]/fullchain.pem keys/
-[] ~ cp /etc/letsencrypt/live/[naked domain]/privkey.pem keys/
-[] ~ exit
+- [] wd ssh -i "key-pair.pem" ubuntu@ec2-[your-elastic-ip-address].compute-1.amazonaws.com
+- [] *Verify port*
+    - [] ~/pd node server.js
+    - [] ~/pd [ctrl-c]
+- [] ~/pd npm run forever
+- [] ~/pd sudo certbot certonly
+    - domain list - include naked and www.
+    - webroot - public
+- [] ~ sudo bash
+- [] ~ mkdir keys
+- [] ~ cp /etc/letsencrypt/live/[naked domain]/fullchain.pem keys/
+- [] ~ cp /etc/letsencrypt/live/[naked domain]/privkey.pem keys/
+- [] ~ exit
 
 ### Configure Server.js to port 8000
-[] ~/pd nano server.js
+- [] ~/pd nano server.js
 ```
 var fs                  = require('fs');
 var http                = require('http');
@@ -132,12 +131,12 @@ server.listen(app.get('port'), function() {
 ```
 
 ### Set the port in .env to 8000 (if applicable)
-[] ~/pd nano .env
+- [] ~/pd nano .env
 
 ### Final steps
-[] ~/pd knex migrate:latest --env=production
-[] ~/pd knex seed:run --env=production
+- [] ~/pd knex migrate:latest --env=production
+- [] ~/pd knex seed:run --env=production
 - *Restart server*
-[] npm run again
-[] npm run logs
-[] more /home/ubuntu/.forever/[logfile name].log
+- [] npm run again
+- [] npm run logs
+- [] more /home/ubuntu/.forever/[logfile name].log
