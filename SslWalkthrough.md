@@ -369,7 +369,7 @@ cp /etc/letsencrypt/live/[naked domain]/privkey.pem keys/
 exit
 ```
 
-### Configure Server.js to port 8000
+### Configure Server.js to use port 8000
 Now that they keys are residing in your server's root/keys dir, edit your server.js file to serve correctly  
 In my case, I will need to add a few things to my server.js. Ultimately, I should just add some conditionals to my server.js to handle the case of ```if NODE_ENV=production```  
 You may also need to adjust your .env file to serve from the correct port  

@@ -11,13 +11,13 @@ aws     = AWS Console
 ### Create EC2 instance
 - [] aws Security Group - allow SSH, HTTP, HTTPS, PostgreSQL
 - [] Save new key pair or use existing
-- [] wd mv ~/Downloads/key-pair.pem .
+- [] wd mv ~/Downloads/key-pair.pem . [note dot at end!]
 - [] wd chmod 400 key-pair.pem
 
 ### SSH into your instance and configure environment
 - [] Gather connect details by highlighting instance and click on connect button
 - [] wd ssh -i "key-pair.pem" ubuntu@ec2-[your-ip-address].compute-1.amazonaws.com
-- [] ~ sudo apt-get update && sudp apt-get upgrade
+- [] ~ sudo apt-get update && sudo apt-get upgrade
 - [] ~ curl https://deb.nodesource.com/setup_7.x -o node.sh
 - [] ~ sudo bash node.sh
 - [] ~ sudo apt-get install node.js
@@ -31,9 +31,10 @@ aws     = AWS Console
 - [] ~ sudo -i -u postgres
 - [] ~ psql
 - [] psql> CREATE DATABASE [db name];
-- [] psql> \c [dbname];
+- [] psql> \c [dbname]
 - [] *SAVE myPassword somewhere memorable!*
 - [] psql> CREATE USER [username] WITH SUPERUSER PASSWORD '[myPassword]';
+- [] \q
 
 ### Clone your repo to instance - *Use HTTPS link*
 - [] ~ git clone https://github.com/[User Repo]/[Repo Name].git
@@ -53,7 +54,8 @@ knexfile.js -> connection: {
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     port: process.env.DB_PORT,
-    host: process.env.DB_HOST }
+    host: process.env.DB_HOST
+}
 ```
 
 ### SSL setup
@@ -73,7 +75,7 @@ knexfile.js -> connection: {
 "logs": "forever logs"
 ```
 
-### *Make sure your server will run on your port before continuing*
+### Make sure your server will run on your port before continuing
 - [] ~/pd node server.js
 
 ### IP Tables
@@ -103,7 +105,7 @@ knexfile.js -> connection: {
 - [] ~ cp /etc/letsencrypt/live/[naked domain]/privkey.pem keys/
 - [] ~ exit
 
-### Configure Server.js to port 8000
+### Configure Server.js to use port 8000
 - [] ~/pd nano server.js
 ```
 var fs                  = require('fs');
